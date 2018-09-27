@@ -99,9 +99,6 @@ def CreateTestCasesFromLogFile():
     for test in tests:
         suiteName = test['suite']
         suiteName = re.sub(r"(?<=\w)([A-Z])", r" \1", suiteName) # puts a space in front of a capitol letter
-        suiteName = suiteName.replace('A M P A P I ', 'AMP API ')
-        suiteName = suiteName.replace('T E2 A P I ', '< insert your url here > API ')
-        suiteName = suiteName.replace('U I', 'UI')
         testName = test['test']
         testName = testName[:-2] # takes the last 2 char off of string, the ()
         testName = re.sub(r"(?<=\w)([A-Z])", r" \1", testName) # puts a space in front of a capitol letter
