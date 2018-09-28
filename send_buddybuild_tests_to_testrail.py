@@ -58,6 +58,7 @@ def DeleteTestRun():
             headers = {'Cache-Control': 'no-cache', 'Content-Type': 'application/json'}
             r = requests.post(url, headers=headers, auth=(testRailEmail, testRailPassword))
             print ("Test run: ", testRunId, " was successfully deleted.")
+            sleep(1) # slowed down for jenkins
 
 def CreateTestRun():
     # This function creates a test run in Test Rail
