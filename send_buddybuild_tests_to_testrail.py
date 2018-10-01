@@ -72,7 +72,7 @@ def CreateTestRun():
         print("The Response content was: ", r.content)
     else:
         testRunId = r.json()['id']
-        print("Test Run:", testRunId, "was created with a 200 API Response from TestRail")
+        return testRunId
 
 def CreateTestCasesFromLogFile():
     # This function parses a buddybuild log file and lists each test category, test name & test result
@@ -80,17 +80,10 @@ def CreateTestCasesFromLogFile():
     # It adds the results to the newly created test run
     # It then returns a formatted list of all the created test case numbers
 
+    global testRunId # makes the created test run number available to all functions
+    testRunId = CreateTestRun() # creates the test run
     status_id = 0
-
-    # the below call to testrail is used to get the test run id:
-    url = 'https://< insert your url here >qa.testrail.net/index.php?/api/v2/get_runs/' + str(testRailProjectId) + '&suite_id=' + str(testRailSuiteId)
-    headers = {'Cache-Control': 'no-cache', 'Content-Type': 'application/json'}
-    r = requests.get(url, headers=headers, auth=(testRailEmail, testRailPassword))
-    if r.json() == []:
-        print("No Test Runs Found")
-    else:
-        for testRunDetails in r.json():
-            testRunId = int(testRunDetails['id'])
+    print("Test Run:", testRunId, "was created with a 200 API Response from TestRail")
 
     # the below call to buddybuild gets the test results
     url = 'https://api.buddybuild.com/v1/builds/' + str(buddyBuildId) + '/tests?showFailed=true&showPassing=true'
@@ -186,7 +179,14 @@ def CreateTestCasesFromLogFile():
     print("Build Number %i's %i unit tests have now been added to TesrRail with %i passing tests." % (buildNumber, testsCount, testsPassed))
     print("This program is now complete for the ___ branch build, pointing to ___.")
 
+def CloseTestRun():
+    # This Function closes out the test run just created
+    url = 'https://te2qa.testrail.net/index.php?/api/v2/close_run/' + str(testRunId)
+    headers = {'Cache-Control': 'no-cache', 'Content-Type': 'application/json'}
+    r = requests.post(url, headers=headers, auth=(testRailEmail, testRailPassword))
+    print ("Test run: ", testRunId, " was successfully closed.")
+
 DeleteTestCasesInSuite()
 DeleteTestRun()
-CreateTestRun()
 CreateTestCasesFromLogFile()
+CloseTestRun()
